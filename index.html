@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Frete</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+
+        .results {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 500;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .result-value {
+            font-weight: 700;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .highlight .result-label,
+        .highlight .result-value {
+            color: white;
+        }
+
+        .highlight .result-value {
+            font-size: 24px;
+        }
+
+        .profit {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .input-prefix {
+            position: relative;
+        }
+
+        .input-prefix::before {
+            content: 'R$';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-weight: 600;
+        }
+
+        .input-prefix input {
+            padding-left: 40px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CÁLCULO DE FRETE</h1>
+            <p style="opacity: 0.9; font-size: 14px;">Calcule seus custos e lucro</p>
+        </div>
+        
+        <div class="content">
+            <div class="form-group">
+                <label>Km retirada até destino:</label>
+                <input type="number" id="kmTotal" value="1000" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de combustível:</label>
+                <select id="tipoCombustivel">
+                    <option value="gasolina">Gasolina</option>
+                    <option value="etanol">Etanol</option>
+                    <option value="gnv">GNV</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label id="labelConsumo">Km/l veículo:</label>
+                <input type="number" id="kmLitro" value="10" step="0.1">
+            </div>
+
+            <div class="form-group input-prefix">
+                <label id="labelValorCombustivel">Valor litro combustível:</label>
+                <input type="number" id="valorLitro" value="5.79" step="0.01">
+            </div>
+
+            <div class="form-group input-prefix">
+                <label>Valor da hora trabalhada:</label>
+                <input type="number" id="valorHora" value="50" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>Horas totais do serviço:</label>
+                <input type="number" id="horasTotais" value="12" step="0.1">
+            </div>
+
+            <div class="form-group input-prefix">
+                <label>Pedágio/Almoço/Ajudante:</label>
+                <input type="number" id="despesasAdicionais" value="350" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>Lucro (%):</label>
+                <input type="number" id="lucroPercentual" value="40" step="0.1">
+            </div>
+
+            <div class="results">
+                <div class="result-row">
+                    <span class="result-label">Consumo de combustível:</span>
+                    <span class="result-value" id="consumoCombustivel">76,92 L</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Custo de combustível:</span>
+                    <span class="result-value" id="custoCombustivel">R$ 368,46</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Valor mão de obra:</span>
+                    <span class="result-value" id="valorMaoObra">R$ 600,00</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Custo total:</span>
+                    <span class="result-value" id="custoTotal">R$ 1.318,46</span>
+                </div>
+                
+                <div class="result-row highlight">
+                    <span class="result-label">Valor a cobrar:</span>
+                    <span class="result-value" id="valorCobrar">R$ 1.845,85</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatarMoeda(valor) {
+            return 'R$ ' + valor.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        function formatarLitros(valor) {
+            return valor.toFixed(2).replace('.', ',') + ' L';
+        }
+
+        function formatarMetrosCubicos(valor) {
+            return valor.toFixed(2).replace('.', ',') + ' m³';
+        }
+
+        function atualizarLabels() {
+            const tipoCombustivel = document.getElementById('tipoCombustivel').value;
+            const labelConsumo = document.getElementById('labelConsumo');
+            const labelValorCombustivel = document.getElementById('labelValorCombustivel');
+            
+            if (tipoCombustivel === 'gnv') {
+                labelConsumo.textContent = 'Km/m³ veículo:';
+                labelValorCombustivel.textContent = 'Valor m³ GNV:';
+            } else {
+                labelConsumo.textContent = 'Km/l veículo:';
+                labelValorCombustivel.textContent = `Valor litro ${tipoCombustivel === 'gasolina' ? 'gasolina' : 'etanol'}:`;
+            }
+        }
+
+        function calcular() {
+            const kmTotal = parseFloat(document.getElementById('kmTotal').value) || 0;
+            const kmLitro = parseFloat(document.getElementById('kmLitro').value) || 1;
+            const valorLitro = parseFloat(document.getElementById('valorLitro').value) || 0;
+            const valorHora = parseFloat(document.getElementById('valorHora').value) || 0;
+            const horasTotais = parseFloat(document.getElementById('horasTotais').value) || 0;
+            const despesasAdicionais = parseFloat(document.getElementById('despesasAdicionais').value) || 0;
+            const lucroPercentual = parseFloat(document.getElementById('lucroPercentual').value) || 0;
+            const tipoCombustivel = document.getElementById('tipoCombustivel').value;
+
+            const consumoCombustivel = kmTotal / kmLitro;
+            const custoCombustivel = consumoCombustivel * valorLitro;
+            const valorMaoObra = valorHora * horasTotais;
+            const custoTotal = custoCombustivel + valorMaoObra + despesasAdicionais;
+            const valorCobrar = custoTotal * (1 + lucroPercentual / 100);
+
+            const formatoConsumo = tipoCombustivel === 'gnv' ? formatarMetrosCubicos : formatarLitros;
+            
+            document.getElementById('consumoCombustivel').textContent = formatoConsumo(consumoCombustivel);
+            document.getElementById('custoCombustivel').textContent = formatarMoeda(custoCombustivel);
+            document.getElementById('valorMaoObra').textContent = formatarMoeda(valorMaoObra);
+            document.getElementById('custoTotal').textContent = formatarMoeda(custoTotal);
+            document.getElementById('valorCobrar').textContent = formatarMoeda(valorCobrar);
+        }
+
+        document.getElementById('tipoCombustivel').addEventListener('change', function() {
+            const tipo = this.value;
+            const kmLitroInput = document.getElementById('kmLitro');
+            const valorLitroInput = document.getElementById('valorLitro');
+            
+            // Valores padrão baseados nos dados fornecidos
+            if (tipo === 'gasolina') {
+                kmLitroInput.value = '10';
+                valorLitroInput.value = '5.79';
+            } else if (tipo === 'etanol') {
+                kmLitroInput.value = '7';
+                valorLitroInput.value = '3.99';
+            } else if (tipo === 'gnv') {
+                kmLitroInput.value = '13.64';
+                valorLitroInput.value = '4.99';
+            }
+            
+            atualizarLabels();
+            calcular();
+        });
+
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('input', calcular);
+        });
+
+        atualizarLabels();
+        calcular();
+    </script>
+</body>
+</html>
