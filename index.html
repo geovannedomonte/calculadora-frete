@@ -174,7 +174,7 @@
         
         <div class="content">
             <div class="form-group">
-                <label>Km - Da retirada até o destino:</label>
+                <label>Km - da retirada até destino:</label>
                 <input type="number" id="kmTotal" value="1000" step="0.01">
             </div>
 
@@ -183,12 +183,13 @@
                 <select id="tipoCombustivel">
                     <option value="gasolina">Gasolina</option>
                     <option value="etanol">Etanol</option>
+                    <option value="diesel">Diesel</option>
                     <option value="gnv">GNV</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label id="labelConsumo">Km/l veículo:</label>
+                <label id="labelConsumo">Km/L veículo:</label>
                 <input type="number" id="kmLitro" value="10" step="0.1">
             </div>
 
@@ -269,7 +270,9 @@
                 labelValorCombustivel.textContent = 'Valor m³ GNV:';
             } else {
                 labelConsumo.textContent = 'Km/l veículo:';
-                labelValorCombustivel.textContent = `Valor litro ${tipoCombustivel === 'gasolina' ? 'gasolina' : 'etanol'}:`;
+                const nomeCombustivel = tipoCombustivel === 'gasolina' ? 'gasolina' : 
+                                       tipoCombustivel === 'etanol' ? 'etanol' : 'diesel';
+                labelValorCombustivel.textContent = `Valor litro ${nomeCombustivel}:`;
             }
         }
 
@@ -303,13 +306,16 @@
             const kmLitroInput = document.getElementById('kmLitro');
             const valorLitroInput = document.getElementById('valorLitro');
             
-            // Valores padrão baseados nos dados fornecidos
+            // Valores padrão baseados nos dados do Rio de Janeiro
             if (tipo === 'gasolina') {
                 kmLitroInput.value = '10';
                 valorLitroInput.value = '5.79';
             } else if (tipo === 'etanol') {
                 kmLitroInput.value = '7';
                 valorLitroInput.value = '3.99';
+            } else if (tipo === 'diesel') {
+                kmLitroInput.value = '12';
+                valorLitroInput.value = '5.49';
             } else if (tipo === 'gnv') {
                 kmLitroInput.value = '13.64';
                 valorLitroInput.value = '4.99';
@@ -328,5 +334,4 @@
         calcular();
     </script>
 </body>
-
 </html>
